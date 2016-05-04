@@ -1,0 +1,1173 @@
+﻿Version=5.5
+NumberOfModules=11
+Module1=HttpUtils2Service
+Module2=aboutAct
+Module3=searchResultAct
+Module4=DBUtils
+Module5=helpAct
+Module6=contactAct
+Module7=insertAct
+Module8=groupViewAct
+Module9=viewInsertedGroupAct
+Module10=searchAct
+Module11=HttpJob
+Build1=Default,Telegram.Search
+ManifestCode='This code will be applied to the manifest file during compilation.~\n~'You do not need to modify it in most cases.~\n~'See this link for for more information: http://www.basic4ppc.com/forum/showthread.php?p=78136~\n~AddManifestText(~\n~<uses-sdk android:minSdkVersion="5" android:targetSdkVersion="14"/>~\n~<supports-screens android:largeScreens="true" ~\n~    android:normalScreens="true" ~\n~    android:smallScreens="true" ~\n~    android:anyDensity="true"/>~\n~	)~\n~SetApplicationAttribute(android:icon, "@drawable/icon")~\n~SetApplicationAttribute(android:label, "$LABEL$")~\n~AddPermission(android.permission.INTERNET)~\n~'End of default text.~\n~
+IconFile=
+NumberOfFiles=12
+File1=aboutview.bal
+File2=BKoodakBold.ttf
+File3=buy_product_view.bal
+File4=contact.bal
+File5=groupview.bal
+File6=helpView.bal
+File7=insertedgroupview.bal
+File8=insertview.bal
+File9=main_view.bal
+File10=menu.bal
+File11=searchresultview.bal
+File12=searchView.bal
+NumberOfLibraries=9
+Library1=core
+Library2=http
+Library3=json
+Library4=stringutils
+Library5=sql
+Library6=contentresolver
+Library7=phone
+Library8=reflection
+Library9=animation
+@EndOfDesignText@
+#Region Module Attributes
+	#FullScreen: False
+	#IncludeTitle: True
+	#ApplicationLabel: جستجو در تلگرام
+	#VersionCode: 26
+	#VersionName: 26
+	#SupportedOrientations: unspecified
+#End Region
+
+#Region  Activity Attributes 
+	#FullScreen: False
+	#IncludeTitle: True
+#End Region
+//
+'Activity module
+Sub Process_Globals
+	
+	Dim ostan(40) As String
+
+	Dim cat(20) As String				
+	
+	Dim DBFileName As String
+	DBFileName = "shahr.db"
+	
+	Dim DBFileDir As String	
+	
+	Dim DBTableName As String
+	DBTableName = "shahr"
+
+	Dim SQL1 As SQL
+	Dim selected_item As Map
+	Dim searchResult  As List
+	
+	Dim groupIcon As Bitmap
+	Dim stickerIcon As Bitmap
+	Dim idIcon As Bitmap
+	Dim robotIcon As Bitmap
+	Dim channelIcon As Bitmap
+	
+	Dim selectedType As String
+	Dim selectedTypeTitle As String 
+	
+	Dim query As String 
+	Dim parameter As String 
+	
+	Dim userInfo As Map 
+	Dim phone As Phone
+	Dim phoneId  As PhoneId 
+	
+	Dim font As Typeface 
+	
+	Dim rightBitmap As Bitmap
+	
+	Dim isEdit As Boolean
+	Dim isSuperGroup As Boolean
+	
+	Dim vipInsertCount As Int
+	Dim todayInsertCount As Int 
+	
+End Sub
+
+Sub Globals
+	
+	Private PanelSticker As Panel
+	
+	Private PanelChannel As Panel
+	
+	Private PanelGroup As Panel
+	Private Group As Button
+	
+	Private Sticker As Button
+	
+	Private Channel As Button
+	
+	Dim navi As AHNavigationDrawer
+	Dim pCantent As Panel
+	
+	
+
+	Private ButtonTopId As Button
+	Private ButtonLastId As Button
+	Private ButtonSearchId As Button
+	Private ButtonAddId As Button
+	Private ButtonTopJoinGroup As Button
+	Private ButtonTopGroup As Button
+	Private ButtonLastGroup As Button
+	Private ButtonSearchGroup As Button
+	Private ButtonAddGroup As Button
+	
+	
+	Private btnMenu As Button
+	
+	Private Search As ImageView
+	
+	Private EditSearch As EditText
+	Private ButtonSuperGroup As Button
+	Private ButtonVIPChannel As Button
+	
+	
+	Private ImageView1 As ImageView
+	Private ImageView21 As ImageView
+	Private ImageView22 As ImageView
+	Private ImageView23 As ImageView
+	Private ImageView24 As ImageView
+	Private ImageView25 As ImageView
+	Private ImageView26 As ImageView
+	Private ImageView15 As ImageView
+	Private ImageView16 As ImageView
+	Private ImageView17 As ImageView
+	Private ImageView18 As ImageView
+	Private ImageView19 As ImageView
+	Private ImageView20 As ImageView
+	Private ImageView10 As ImageView
+	Private ImageView11 As ImageView
+	Private ImageView12 As ImageView
+	Private ImageView13 As ImageView
+	Private ImageView14 As ImageView
+	Private ImageView6 As ImageView
+	Private ImageView7 As ImageView
+	Private ImageView8 As ImageView
+	Private ImageView9 As ImageView
+	Private ImageView2 As ImageView
+	Private ImageView3 As ImageView
+	Private ImageView4 As ImageView
+	Private ImageView5 As ImageView
+	
+	Private ImageView30 As ImageView
+	
+	Private ImageView27 As ImageView
+	
+	Private LabelBack As Label
+	
+	Private ButtonInsertSuperGroup As Button
+	Private ButtonMyGroup As Button 
+	
+	Private ScrollViewChannel As ScrollView
+	 
+	Private ButtonMyChannel As Button
+	Private ScrollViewGroup As ScrollView
+	Private PanelGroupContainer As Panel
+	Private PanelChannelContainer As Panel
+	 
+	Private ButtonTopChannelView As Button
+	 
+	Private ImageView29 As ImageView
+	
+	Private PanelStickerContainer As Panel
+	Private ScrollViewSticker As ScrollView
+	
+	
+End Sub
+
+Sub btnMenu_Click
+	navi.OpenDrawer2(navi.GRAVITY_RIGHT)
+	
+End Sub
+
+Sub btnAbout_Click
+	StartActivity("aboutAct")
+End Sub
+
+Sub Activity_Create(FirstTime As Boolean)
+	
+	navi.Initialize2("navi",Activity,75%x,navi.GRAVITY_RIGHT)' جهت راس چین بودن ساید بار
+	
+	navi.NavigationPanel.LoadLayout("menu")
+	
+	pCantent.Initialize("")
+	navi.ContentPanel.AddView(pCantent,0,0,100%x,100%y)
+	
+	pCantent.LoadLayout("main_view")
+	pCantent.SendToBack	
+	
+	'Activity.LoadLayout("main_view")
+	Activity.Title="جستجوی گروه تلگرام"
+	
+	
+	If FirstTime Then
+		DBFileDir = DBUtils.CopyDBFromAssets(DBFileName)
+		
+	End If
+	SQL1.Initialize(DBFileDir, DBFileName, True)
+	
+	
+	cat(1)=("دسته بندی نشده")'1
+	cat(2)=("رسمی")'2
+	cat(3)=("علمی")'3
+	cat(4)=("آموزش-تحصیلی")'4
+	cat(5)=("طنز و سرگرمی")'5
+	cat(6)=("اجتماعی-خبری")'6
+	cat(7)=("پزشکی-سلامت")'7
+	cat(8)=("دوستان شخصی")'8
+	cat(9)=("تجاری")'9
+	cat(10)=("ادبی-هنری")'10
+	cat(11)=("عشق-دلنوشته")'11
+	cat(12)=("اعتقادی")'12
+	cat(13)=("شرکت ها-دفتر ها")'13
+	cat(14)=("مشاغل و صنفی")'14
+	cat(15)=("ورزشی")'15
+	cat(16)=("مد و زیبایی")'16
+	
+	
+	ostan(0)="همه استانها"
+	ostan(1)="آذربايجان شرقي"
+	ostan(2)="آذربايجان غربي"
+	ostan(3)="اردبيل"
+	ostan(4)="اصفهان"
+	ostan(5)="ايلام"
+	ostan(6)="بوشهر"
+	ostan(7)="تهران"
+	ostan(8)="چهارمحال وبختياري"
+	ostan(9)="خراسان جنوبي"
+	ostan(10)="خراسان رضوي"
+	ostan(11)="خراسان شمالي"
+	ostan(12)="خوزستان"
+	ostan(13)="زنجان"
+	ostan(14)="سمنان"
+	ostan(15)="سيستان و بلوچستان"
+	ostan(17)="فارس"
+	ostan(18)="قزوين"
+	ostan(19)="قم"
+	ostan(20)="كردستان"
+	ostan(21)="كرمان"
+	ostan(22)="كرمانشاه"
+	
+	ostan(23)="كهگيلويه وبوير احمد"
+	ostan(24)="گلستان"
+	ostan(25)="گيلان"
+	ostan(26)="لرستان"
+	ostan(27)="مازندران"
+	ostan(28)="مركزي"
+	ostan(29)="هرمزگان"
+	ostan(30)="همدان"
+	ostan(31)="يزد"
+	
+	font =Typeface.LoadFromAssets("yekan.ttf")
+	
+	
+	
+	
+	Sticker.Typeface =font 
+	Sticker.TextSize =15 
+	Group.Typeface =font
+	Group.TextSize =15
+	Channel.Typeface = font 
+	Channel.TextSize = 15 
+	
+	
+ 
+	ButtonSearchId.Typeface=font   
+	ButtonSearchId.TextSize=15   
+	ButtonAddId.Typeface=font   
+	ButtonAddId.TextSize=15   
+	ButtonTopJoinGroup.Typeface=font   
+	ButtonTopJoinGroup.TextSize=15   
+	ButtonTopGroup.Typeface=font  
+	ButtonTopGroup.TextSize=15  
+	ButtonLastGroup.Typeface=font   
+	ButtonLastGroup.TextSize=15   
+	ButtonSearchGroup.Typeface=font   
+	ButtonSearchGroup.TextSize=15    
+	ButtonAddGroup.Typeface=font   
+	ButtonAddGroup.TextSize=15 
+	
+	ButtonVIPChannel.Typeface=font
+	ButtonVIPChannel.TextSize=15
+	
+	ButtonSuperGroup.Typeface=font
+	ButtonSuperGroup.TextSize=15
+	
+
+	
+	ButtonInsertSuperGroup.Typeface=font
+	ButtonInsertSuperGroup.TextSize=15
+	
+	
+	ButtonMyGroup.Typeface=font
+	ButtonMyGroup.TextSize=15
+	  
+	  
+	ButtonMyChannel.Typeface=font
+	ButtonMyChannel.TextSize=15 
+	
+	
+	
+	
+	groupIcon.Initialize(File.DirAssets, "group_icon.png")
+	stickerIcon.Initialize(File.DirAssets, "sticker_icon.png")
+	idIcon.Initialize(File.DirAssets, "id_icon.png")
+	robotIcon.Initialize(File.DirAssets, "robot_icon.png")
+	channelIcon.Initialize(File.DirAssets, "channel_icon.png")
+	rightBitmap.Initialize(File.DirAssets,"right237.png")
+	
+	
+	ImageView1.Bitmap = rightBitmap 
+	ImageView21.Bitmap = rightBitmap 
+	ImageView22.Bitmap = rightBitmap 
+	ImageView23.Bitmap = rightBitmap 
+	ImageView24.Bitmap = rightBitmap 
+	ImageView25.Bitmap = rightBitmap 
+	ImageView26.Bitmap = rightBitmap 
+	ImageView15.Bitmap = rightBitmap 
+	ImageView16.Bitmap = rightBitmap 
+	ImageView17.Bitmap = rightBitmap 
+	ImageView18.Bitmap = rightBitmap 
+	ImageView19.Bitmap = rightBitmap 
+	ImageView20.Bitmap = rightBitmap 
+	ImageView10.Bitmap = rightBitmap 
+	ImageView11.Bitmap = rightBitmap 
+	ImageView12.Bitmap = rightBitmap 
+	ImageView13.Bitmap = rightBitmap 
+	ImageView14.Bitmap = rightBitmap 
+	ImageView6.Bitmap = rightBitmap 
+	ImageView7.Bitmap = rightBitmap 
+	ImageView8.Bitmap = rightBitmap 
+	ImageView9.Bitmap = rightBitmap 
+	ImageView2.Bitmap = rightBitmap 
+	ImageView3.Bitmap = rightBitmap 
+	ImageView4.Bitmap = rightBitmap 
+	ImageView5.Bitmap = rightBitmap 
+	
+	ImageView27.Bitmap = rightBitmap 
+	 
+	ImageView29.Bitmap = rightBitmap 
+	ImageView30.Bitmap = rightBitmap 
+	
+	
+	PanelGroupContainer.RemoveView()
+	ScrollViewGroup.Panel.AddView(PanelGroupContainer,0,0,PanelGroupContainer.Width,PanelGroupContainer.Height)
+	ScrollViewGroup.Panel.Height =450dip
+	ScrollViewGroup.Panel.Color=Colors.White
+	
+	PanelStickerContainer.RemoveView
+	ScrollViewSticker.Panel.AddView(PanelStickerContainer,0,0,PanelStickerContainer.Width,PanelStickerContainer.Height)
+	ScrollViewSticker.Panel.Height =410dip
+	ScrollViewSticker.Panel.Color=Colors.White
+		
+	PanelChannelContainer.RemoveView()
+	ScrollViewChannel.Panel.AddView(PanelChannelContainer,0,0,PanelChannelContainer.Width,PanelChannelContainer.Height)
+	ScrollViewChannel.Panel.Height =410dip
+	ScrollViewChannel.Panel.Color=Colors.White	
+	
+'**************************************	
+	 
+	If(FirstTime = True ) Then 
+		checkRegister
+		 
+	End If 
+ 
+'*************************************
+	readInfo
+End Sub
+
+
+
+Sub readInfo
+	Try 
+		userInfo.Initialize
+		userInfo= DBUtils.ExecuteMap(SQL1,  "SELECT *   FROM  info ", Null)
+	
+		If userInfo.Get("to_day_insert_advance") = Null Then 
+			vipInsertCount = 0
+		Else 	
+			vipInsertCount = userInfo.Get("to_day_insert_advance")
+		End If 
+		
+		If userInfo.Get("to_day_insert") = Null Then 
+			todayInsertCount = 0
+		Else 	
+			todayInsertCount = userInfo.Get("to_day_insert")
+		End If 
+		
+		Dim day  As Int  =  DateTime.GetDayOfMonth(DateTime.Now)
+		Dim today As Int 
+		If IsNumber( userInfo.Get("to_day_date")) =False Then 
+			today = 0
+		Else 
+			today = userInfo.Get("to_day_date")
+		End If  
+		If (today <> day )Then 
+			todayInsertCount = 0	
+			vipInsertCount = 0	
+		 	userInfo.Put("to_day_date",day)
+			writeInfo
+		End If 	
+		
+	Catch
+		Try
+			userInfo=DBUtils.ExecuteMap(SQL1,  _
+				"CREATE TABLE info (             " &   _
+				"name	TEXT,                      " &   _
+				"phone	TEXT,                  " &   _
+				"user_id	INTEGER,               " &   _
+				"pass	TEXT,                      " &   _
+				"user_name	TEXT,              " &   _
+				"sdk	TEXT,                      " &   _
+				"model	TEXT,                  " &   _
+				"line_number	TEXT,              " &   _
+				"phoneid	TEXT,                  " &   _
+				"is_advance	INTEGER,           " &   _
+				"is_premium	INTEGER,           " &   _
+				"advance_count	INTEGER,       " &   _
+				"advance_expier_date	TEXT,      " &   _
+				"to_day_date	TEXT,              " &   _
+				"to_day_insert	INTEGER,       " &   _
+				"to_day_insert_advance 	INTEGER" &   _
+				")" _
+				,Null)
+		Catch
+		
+		End Try 
+		DBUtils.ExecuteMap(SQL1,  _
+			"insert into info (name,is_advance,is_premium)VALUES('temp','false','false') ",Null)
+		
+		userInfo= DBUtils.ExecuteMap(SQL1,  "SELECT *   FROM  info ", Null)	
+		Dim day  As Int  =  DateTime.GetDayOfMonth(DateTime.Now)
+		userInfo.Put("to_day_date",day)	
+		todayInsertCount = 0
+	
+		writeInfo
+
+	End Try
+End Sub 
+
+Sub writeInfo 
+	
+	If(userInfo.IsInitialized =False) Then 
+		userInfo.Initialize
+	End If 	
+
+'	Dim line As String 
+'	
+'	Try 
+'		line = phoneId.GetLine1Number
+'	Catch
+'		line = "need root"
+'	End Try 	
+	
+	userInfo.Put("sdk",phone.SdkVersion)
+	userInfo.Put("model",phone.Manufacturer & ","& phone.Product)
+	'userInfo.Put("line_number",line) ---use pass
+	userInfo.Put("phoneid",phoneId.GetDeviceId)
+	
+
+
+	userInfo.Put("to_day_insert_advance",vipInsertCount)
+	userInfo.Put("to_day_insert",todayInsertCount)
+
+	Dim updateQuery As String  = "update  info set " &  _					
+		"name  ='" & userInfo.Get("name") & "'," & _                                         
+		"phone	 ='" &  userInfo.Get("phone") & "'," & _                              
+		"user_id	 =" &  userInfo.Get("user_id")  & "," & _                                   
+		"pass	 ='" & userInfo.Get("pass")  & "'," & _                                    
+		"user_name	 ='" & userInfo.Get("user_name")  & "'," & _                              
+		"sdk	 ='" &   userInfo.Get("sdk")  & "'," & _                                   
+		"model	 ='" & userInfo.Get("model")   & "'," & _                            
+		"line_number	 ='" &  userInfo.Get("line_number") & "'," & _                       
+		"phoneid	 ='" &  userInfo.Get("phoneid")  & "'," & _                                
+		"is_advance	 ='" &  userInfo.Get("is_advance") & "'," & _                         
+		"is_premium	 ='" & userInfo.Get("is_premium")  & "'," & _                        
+		"advance_count	 =" & userInfo.Get("advance_count")   & "," & _              
+		"advance_expier_date	 ='" &  userInfo.Get("advance_expier_date")  & "'," & _                  
+		"to_day_date	 ='" & userInfo.Get("to_day_date")   & "'," & _                  
+		"to_day_insert	 =" & userInfo.Get("to_day_insert") & "," & _              
+		"to_day_insert_advance	 =" & userInfo.Get("to_day_insert_advance") 
+	
+	DBUtils.ExecuteMemoryTable(SQL1,  updateQuery , Null,0)
+	
+End Sub 
+
+Sub checkRegister
+
+
+	readInfo
+'	Dim line As String 
+'	
+'	Try 
+'		line = phoneId.GetLine1Number
+'	Catch
+'		line = "need root"
+'	End Try 
+	
+	Dim model As String = userInfo.Get("model")
+	Dim sdk As Int = userInfo.Get("sdk")
+'	Dim line_number As String = userInfo.Get("line_number")
+	Dim phone_id As String = userInfo.Get("phoneid")
+	
+	If(IsNumber( userInfo.Get("user_id"))=False Or _ 	
+			 userInfo.Get("user_id")=0 Or _
+			 IsNumber( userInfo.Get("user_name"))=False Or _
+			 userInfo.Get("user_name")=Null Or _
+				sdk <> phone.SdkVersion Or  _ 
+			model <> phone.Manufacturer & ","& phone.Product Or  _
+		 	phone_id <> phoneId.GetDeviceId) Then 
+		
+		userInfo.Put("is_advance",False)
+		userInfo.Put("is_premium",False)
+		userInfo.Put("to_day_insert_advance",0)
+		
+		writeInfo
+		StartActivity("viewInsertedGroupAct")
+		writeInfo
+		
+		Return
+		
+	End If
+	 
+	Return
+	
+End Sub
+
+Sub loadMenu
+	
+	
+End Sub 
+
+Sub Channel_Click
+
+	
+	
+	PanelGroup.Visible=False 
+	
+	PanelChannel.Visible= True
+	PanelSticker.Visible=False 
+
+	Group.Color = Colors.RGB(30,136,229)
+	Sticker.Color = Colors.RGB(30,136,229)
+	
+	Group.TextColor= Colors.RGB(207,216,220)
+	Sticker.TextColor = Colors.RGB(207,216,220)
+	
+	
+	Channel.Color = Colors.White
+	Channel.TextColor= Colors.rgb(96,125,139)
+End Sub
+
+Sub Robot_Click
+	
+	PanelChannel.Visible = False
+	PanelGroup.Visible=False 
+	
+	PanelSticker.Visible = False
+	
+	
+	
+	
+	Channel.Color=Colors.RGB(30,136,229)
+	Group.Color = Colors.RGB(30,136,229)
+	
+	Sticker.Color = Colors.RGB(30,136,229)
+	 
+	Channel.TextColor=Colors.RGB(207,216,220)
+	Group.TextColor= Colors.RGB(207,216,220)
+	
+	Sticker.TextColor = Colors.RGB(207,216,220)
+
+		
+End Sub
+
+Sub Sticker_Click
+	
+	PanelGroup.Visible=False 
+	
+	PanelChannel.Visible=False 
+	PanelSticker.Visible=True 
+	
+	Channel.Color=Colors.RGB(30,136,229)
+	Group.Color = Colors.RGB(30,136,229)
+
+	
+	Channel.TextColor=Colors.RGB(207,216,220)
+	Group.TextColor= Colors.RGB(207,216,220)
+	
+ 
+	Sticker.Color=  Colors.White
+	Sticker.TextColor= Colors.rgb(96,125,139)
+End Sub
+
+Sub ID_Click
+	
+	PanelGroup.Visible=False 
+	
+	PanelChannel.Visible=False 
+	PanelSticker.Visible=False 
+	
+	
+	Channel.Color=Colors.RGB(30,136,229)
+	Group.Color = Colors.RGB(30,136,229)
+	Sticker.Color = Colors.RGB(30,136,229)
+	
+	Channel.TextColor=Colors.RGB(207,216,220)
+	Group.TextColor= Colors.RGB(207,216,220)
+	Sticker.TextColor = Colors.RGB(207,216,220)
+	
+	
+	
+End Sub
+
+Sub Group_Click
+	
+	PanelGroup.Visible= True
+	
+	PanelChannel.Visible=False 
+	PanelSticker.Visible=False 
+	
+	Channel.Color=Colors.RGB(30,136,229)
+	Sticker.Color= Colors.RGB(30,136,229)
+	
+ 	Channel.TextColor=Colors.RGB(207,216,220)
+	Sticker.TextColor = Colors.RGB(207,216,220)
+	
+ 
+	Group.Color = Colors.White
+	Group.TextColor= Colors.rgb(96,125,139)
+End Sub
+ 
+Sub Activity_Resume
+
+End Sub
+
+Sub Activity_Pause (UserClosed As Boolean)
+
+End Sub
+
+Sub btnLastGroup_Click
+	Try	
+		Dim job As HttpJob
+		ProgressDialogShow("درحال دریافت")
+		job.Initialize("last_group", Me)
+		
+		query ="http://www.aloosalam.ir/index.php/mobile/index/search"
+		parameter  = "pass=1266&type=group&sort=last" & "&user=" & userInfo.Get("user_id") & "&v=" & Application.VersionCode & "&line="   & userInfo.Get("line_number") 
+		
+		job.PostString(query, parameter)
+	Catch
+		Msgbox("خطا در دریافت اطلاعات ","خطا")
+	End Try	
+End Sub
+
+Sub JobDone(Job As HttpJob)
+	searchResult.Initialize()
+	searchResult.Clear()
+	
+	Try
+		ProgressDialogHide
+		If Job.Success Then
+			Dim res As String
+			res = Job.GetString
+			Dim parser As JSONParser
+			parser.Initialize(res)
+		
+			If 	Job.JobName= "topJoin_group" Or  _
+				Job.JobName="last_group" Or _
+				Job.JobName="topView_group" Or _
+				Job.JobName="topJoin_id" Or _
+				Job.JobName="last_id" Or _
+				Job.JobName="topView_id" Or _
+				Job.JobName="topJoin_sticker" Or _
+				Job.JobName= "last_sticker" Or _
+				Job.JobName="topView_sticker" Or  _
+				Job.JobName="topJoin_robot" Or _
+				Job.JobName="last_robot" Or _
+				Job.JobName="topView_robot" Or _
+				Job.JobName="topJoin_channel" Or _
+				Job.JobName="last_channel" Or _
+				Job.JobName="topView_channel" Or _
+				Job.JobName="topMember_channel" Or _
+				Job.JobName="my_channel" Or _
+				Job.JobName="my_group" Or _
+				Job.JobName="super_group" Or _
+				Job.JobName="vip_channel" Or _
+				Job.JobName="order_sticker" Or _
+				Job.JobName="search_all" Then 
+					
+					Dim COUNTRIES As List
+					COUNTRIES = parser.NextArray 'returns a list with maps
+					
+					Dim rows As List
+					rows= COUNTRIES.Get(0)
+					
+					If(rows.Size > 0 ) Then 
+						
+						For i= 0 To rows.Size-1
+							Dim row As Map
+							
+							row.Initialize()
+							row=rows.Get(i)
+							searchResult.Add(row)
+						Next 
+						
+						Job.Release
+						StartActivity("searchResultAct")
+					Else 
+						If(Job.JobName="my_channel" Or _
+							Job.JobName="my_group" )Then
+							Msgbox("شما هنوز موردی ثبت نکرده اید. از دکمه ثبت گروه یا ثبت کانال استفاده کنید.","ثبت مورد")
+						Else
+							Msgbox("موردی با مشخصات درخواستی شما یافت نشد . از بخش آخرین " & selectedTypeTitle & "ها هم می توانید " & selectedTypeTitle  & " مورد نظر خود را پیدا کنید  . ","جستجو")
+						End If 	
+					End If 	
+			
+			End If
+		Else
+			ToastMessageShow("خطا در ارتباط با سرور: اتصال اینترنت خود را بررسی کنید .", True)
+		End If
+	Catch
+		Msgbox("خطا در دریافت اطلاعات جستجو  ","خطا")
+	
+	End Try		
+End Sub
+
+Sub ButtonAddSticker_Click
+
+	isEdit =False
+	selectedType = "sticker" 
+	'boxTitle = "جستجو در استیکر ها " 
+	selectedTypeTitle = "استیکر" 
+	StartActivity("insertAct")
+End Sub
+
+Sub ButtonSearchSticker_Click
+	isEdit =False
+	selectedType = "sticker" 
+	'boxTitle = "جستجو در استیکر ها " 
+	selectedTypeTitle = "استیکر" 
+	StartActivity("searchAct")
+	
+End Sub
+Sub ButtonLastSticker_Click
+	isEdit =False
+	Try	
+		Dim job As HttpJob
+		ProgressDialogShow("درحال دریافت")
+		job.Initialize("last_sticker", Me)
+		query = "http://www.aloosalam.ir/index.php/mobile/index/search"
+		
+		parameter  ="pass=1266&type=sticker&sort=last" & "&user=" & userInfo.Get("user_id") & "&v=" & Application.VersionCode & "&line="   & userInfo.Get("line_number") 
+		job.PostString(query,parameter)
+	Catch
+		Msgbox("خطا در دریافت اطلاعات ","خطا")
+	End Try	
+End Sub
+Sub ButtonTopSticker_Click	
+	isEdit =False
+	Try	
+		Dim job As HttpJob 
+		ProgressDialogShow("درحال دریافت")
+		job.Initialize("topView_sticker", Me)
+		query = "http://www.aloosalam.ir/index.php/mobile/index/search"
+		parameter="pass=1266&type=sticker&sort=topView" & "&user=" & userInfo.Get("user_id") & "&v=" & Application.VersionCode  & "&line="  & userInfo.Get("line_number") 
+		job.PostString(query,parameter )
+	Catch
+		Msgbox("خطا در دریافت اطلاعات ","خطا")
+	End Try	
+End Sub
+Sub ButtonTopJoinSticker_Click
+	 
+ 	isEdit =False
+ 	Try	
+ 		Dim job As HttpJob
+ 		ProgressDialogShow("درحال دریافت")
+ 		job.Initialize("topJoin_sticker", Me)
+ 		query ="http://www.aloosalam.ir/index.php/mobile/index/search"
+ 		parameter="pass=1266&type=sticker&sort=topJoin" & "&user=" & userInfo.Get("user_id") & "&v=" & Application.VersionCode  & "&line="   & userInfo.Get("line_number") 
+ 		job.PostString(query, parameter)
+ 	Catch
+ 		Msgbox("خطا در دریافت اطلاعات ","خطا")
+ 	End Try	
+End Sub
+Sub ButtonAddChannel_Click
+	
+	If (todayInsertCount >8 ) Then  
+		Msgbox("روزانه امکان ثبت بیش از هشت گروه یا کانال وجود ندارد. ","عدم دسترسی")
+		Return
+	End If	
+	isEdit =False
+	selectedType = "channel" 
+	selectedTypeTitle = "کانال" 
+	
+	isEdit =False
+	StartActivity("insertAct")
+	
+End Sub
+Sub ButtonSearchChannel_Click
+	isEdit =False
+	selectedType = "channel" 
+	selectedTypeTitle = "کانال" 
+	StartActivity("searchAct")
+	
+End Sub
+Sub ButtonLastChannel_Click
+	isEdit =False
+	Try	
+		Dim job As HttpJob
+		ProgressDialogShow("درحال دریافت")
+		job.Initialize("last_channel", Me)
+		query ="http://www.aloosalam.ir/index.php/mobile/index/search"
+		parameter="pass=1266&type=channel&sort=last"  & "&user=" & userInfo.Get("user_id") & "&v=" & Application.VersionCode  & "&line="   & userInfo.Get("line_number") 
+		job.PostString(query,parameter)
+	Catch
+		Msgbox("خطا در دریافت اطلاعات ","خطا")
+	End Try	
+End Sub
+
+Sub ButtonTopJoinGroup_Click
+	 
+	isEdit =False
+	Try	
+		Dim job As HttpJob
+		ProgressDialogShow("درحال دریافت")
+		job.Initialize("topMember_channel", Me)
+		query = "http://www.aloosalam.ir/index.php/mobile/index/search"
+		parameter="pass=1266&type=group&sort=topJoin" & "&user=" & userInfo.Get("user_id") & "&v=" & Application.VersionCode  & "&line="   & userInfo.Get("line_number") 
+		job.PostString(query,parameter )
+	Catch
+		Msgbox("خطا در دریافت اطلاعات ","خطا")
+	End Try	
+End Sub
+Sub ButtonAddRobot_Click
+	 
+	isEdit =False
+	selectedType = "robot" 
+	selectedTypeTitle = "ربات"
+	
+	isEdit =False
+	isEdit =False
+	StartActivity("insertAct")
+End Sub
+Sub ButtonSearchRobot_Click
+	
+	isEdit =False
+	selectedType = "robot" 
+	selectedTypeTitle = "ربات" 
+	StartActivity("searchAct")
+	
+End Sub
+Sub ButtonLastRobot_Click
+	isEdit =False
+	Try	
+		Dim job As HttpJob
+		ProgressDialogShow("درحال دریافت")
+		job.Initialize("last_robot", Me)
+		query = "http://www.aloosalam.ir/index.php/mobile/index/search"
+		parameter="pass=1266&type=robot&sort=last" & "&user=" & userInfo.Get("user_id") & "&v=" & Application.VersionCode  & "&line="  & userInfo.Get("line_number") 
+		job.PostString(query, parameter)
+	Catch
+		Msgbox("خطا در دریافت اطلاعات ","خطا")
+	End Try	
+End Sub
+Sub ButtonTopRobot_Click
+	 
+	isEdit =False
+	Try	
+		Dim job As HttpJob
+		ProgressDialogShow("درحال دریافت")
+		job.Initialize("topView_robot", Me)
+		query = "http://www.aloosalam.ir/index.php/mobile/index/search"
+		parameter="pass=1266&type=robot&sort=topView" & "&user=" & userInfo.Get("user_id") & "&v=" & Application.VersionCode  & "&line="   & userInfo.Get("line_number") 
+		job.PostString(query,parameter )
+	Catch
+		Msgbox("خطا در دریافت اطلاعات ","خطا")
+	End Try	
+End Sub
+Sub ButtonTopJoinRobot_Click
+	 
+	isEdit =False
+	Try	
+		Dim job As HttpJob
+		ProgressDialogShow("درحال دریافت")
+		job.Initialize("topJoin_group", Me)
+		query = "http://www.aloosalam.ir/index.php/mobile/index/search"
+		parameter="pass=1266&type=group&sort=topJoin" & "&user=" & userInfo.Get("user_id") & "&v=" & Application.VersionCode  & "&line="   & userInfo.Get("line_number") 
+		job.PostString(query,parameter)
+	Catch
+		Msgbox("خطا در دریافت اطلاعات ","خطا")
+	End Try	
+End Sub
+Sub ButtonAddId_Click
+	
+	
+	isEdit =False
+	selectedType = "id" 
+	selectedTypeTitle = "آی دی " 
+	StartActivity("insertAct")
+	
+End Sub
+Sub ButtonSearchId_Click
+	isEdit =False
+	selectedType = "id" 
+	selectedTypeTitle = "آی دی " 
+	StartActivity("searchAct")
+	
+End Sub
+Sub ButtonLastId_Click
+	isEdit =False
+	Try	
+		Dim job As HttpJob
+		ProgressDialogShow("درحال دریافت")
+		job.Initialize("last_id", Me)
+		query = "http://www.aloosalam.ir/index.php/mobile/index/search"
+		parameter="pass=1266&type=id&sort=last" & "&user=" & userInfo.Get("user_id") & "&v=" & Application.VersionCode  & "&line="  & userInfo.Get("line_number") 
+		job.PostString(query,parameter )
+	Catch
+		Msgbox("خطا در دریافت اطلاعات ","خطا")
+	End Try	
+End Sub
+Sub ButtonTopId_Click
+	 
+ 	isEdit =False
+ 	Try	
+ 		Dim job As HttpJob
+ 		ProgressDialogShow("درحال دریافت")
+ 		job.Initialize("topView_id", Me)
+ 		query = "http://www.aloosalam.ir/index.php/mobile/index/search"
+ 		parameter="pass=1266&type=id&sort=topView" & "&user=" & userInfo.Get("user_id") & "&v=" & Application.VersionCode  & "&line="  & userInfo.Get("line_number") 
+ 		job.PostString(query,parameter )
+ 	Catch
+ 		Msgbox("خطا در دریافت اطلاعات ","خطا")
+ 	End Try	
+End Sub
+ 
+Sub ButtonAddGroup_Click
+	isEdit =False
+	If (todayInsertCount >8 ) Then  
+		Msgbox("روزانه امکان ثبت بیش از هشت گروه یا کانال  وجود ندارد.این مورد برای جلوگیری از اسپم می باشد .  ","عدم دسترسی")
+		
+		Return
+	End If	
+	isSuperGroup=False
+	selectedType = "group" 
+	selectedTypeTitle = "گروه " 
+	StartActivity("insertAct")
+End Sub 
+
+Sub ButtonSearchGroup_Click
+	isEdit =False
+	selectedType = "group" 
+	selectedTypeTitle = "گروه " 
+	StartActivity("searchAct")
+End Sub
+Sub ButtonLastGroup_Click
+	Try	
+		Dim job As HttpJob
+		ProgressDialogShow("درحال دریافت")
+		job.Initialize("last_group", Me)
+		query = "http://www.aloosalam.ir/index.php/mobile/index/search"
+		parameter="pass=1266&type=group&sort=last" & "&user=" & userInfo.Get("user_id") & "&v=" & Application.VersionCode  & "&line=" & userInfo.Get("line_number") 
+		job.PostString(query,parameter )
+	Catch
+		Msgbox("خطا در دریافت اطلاعات ","خطا")
+	End Try	
+End Sub
+Sub ButtonTopGroup_Click
+	 
+	isEdit =False
+	Try	
+		Dim job As HttpJob
+		ProgressDialogShow("درحال دریافت")
+		job.Initialize("topView_group", Me)
+		query = "http://www.aloosalam.ir/index.php/mobile/index/search"
+		parameter="pass=1266&type=group&sort=topView" & "&user=" & userInfo.Get("user_id") & "&v=" & Application.VersionCode  & "&line="  & userInfo.Get("line_number") 
+		job.PostString(query,parameter )
+	Catch
+		Msgbox("خطا در دریافت اطلاعات ","خطا")
+	End Try	
+End Sub
+
+Sub ButtonMenu_Click
+	
+
+	 
+End Sub
+
+
+Sub MenuHelp_Click
+	StartActivity("helpAct")
+	navi.CloseDrawer2(Gravity.RIGHT) 
+End Sub
+Sub MenuAbout_Click
+	StartActivity("AboutAct")
+	navi.CloseDrawer2(Gravity.RIGHT) 
+End Sub
+
+Sub MenuExit_Click
+	 
+	ExitApplication
+	
+
+End Sub
+Sub MenuOrder_Click
+	Dim p As PhoneIntents
+	StartActivity(p.OpenBrowser("http://aloosalam.ir/index.php/login/index/1"))
+	navi.CloseDrawer2(Gravity.RIGHT)  
+End Sub 
+
+Sub MenuContact_Click
+	StartActivity("contactAct")
+	navi.CloseDrawer2(Gravity.RIGHT)
+End Sub
+Sub btnPanel_Click
+	Dim p As PhoneIntents
+	Msgbox("نام کاربری شما :" & userInfo.Get("user_name") & CRLF & _
+	" رمز عبور اولیه شما " & userInfo.Get("pass") & " می باشد","رمز عبور")
+	
+	StartActivity(p.OpenBrowser("http://aloosalam.ir/index.php/login/"))
+	navi.CloseDrawer2(Gravity.RIGHT)  
+End Sub
+
+Sub Search_Click
+	isEdit =False
+	If EditSearch.Text.Length <2 Then 
+		Return 
+	End If 	
+	Try	
+		Dim job As HttpJob
+		ProgressDialogShow("درحال دریافت")
+		job.Initialize("search_all", Me)
+		job.PostString("http://www.aloosalam.ir/index.php/mobile/index/search","pass=1266"  &   _
+			"&type=all" & _ 
+			"&q="& EditSearch.Text & "&user=" & userInfo.Get("user_id") & "&v=" & Application.VersionCode   & "&line=" & userInfo.Get("line_number") )
+	Catch
+		Msgbox("خطا در دریافت اطلاعات ","خطا")
+	End Try	
+End Sub
+Sub EditSearch_EnterPressed
+	Search_Click
+End Sub
+Sub ButtonSuperGroup_Click
+	
+	isEdit =False
+	Try	
+		Dim job As HttpJob
+		ProgressDialogShow("درحال دریافت")
+		job.Initialize("super_group", Me)
+		query = "http://www.aloosalam.ir/index.php/mobile/index/search"
+		parameter="pass=1266&type=group&sort=super" & "&user=" & userInfo.Get("user_id") & "&v=" & Application.VersionCode  & "&line="   & userInfo.Get("line_number") 
+		job.PostString(query,parameter )
+	Catch
+		Msgbox("خطا در دریافت اطلاعات ","خطا")
+	End Try	
+End Sub
+Sub ButtonVIPChannel_Click
+	isEdit =False
+	Try	
+		Dim job As HttpJob
+		ProgressDialogShow("درحال دریافت")
+		job.Initialize("vip_channel", Me)
+		query = "http://www.aloosalam.ir/index.php/mobile/index/search"
+		parameter="pass=1266&type=channel&sort=vip" & "&user=" & userInfo.Get("user_id") & "&v=" & Application.VersionCode  & "&line=" & userInfo.Get("line_number") 
+		job.PostString(query,parameter )
+	Catch
+		Msgbox("خطا در دریافت اطلاعات ","خطا")
+	End Try	
+End Sub
+
+Sub ButtonMyGroup_Click
+	Try	
+		isEdit =True
+		Dim job As HttpJob
+		ProgressDialogShow("درحال دریافت")
+		job.Initialize("my_group", Me)
+		query = "http://www.aloosalam.ir/index.php/mobile/index/search"
+		parameter="pass=1266&type=group&sort=my" & "&user=" & userInfo.Get("user_id") & "&v=" & Application.VersionCode  & "&line="  & userInfo.Get("line_number") 
+		job.PostString(query,parameter )
+	Catch
+		Msgbox("خطا در دریافت اطلاعات ","خطا")
+	End Try	
+End Sub
+
+Sub ButtonInsertSuperGroup_Click
+	
+	If (vipInsertCount >4 ) Then  	
+		Msgbox("روزانه امکان ثبت بیش از چهار سوپر گروه وجود ندارد. ","عدم دسترسی")
+		Return
+	End If  
+	isEdit =False
+	selectedType = "group" 
+	selectedTypeTitle = "سوپر گروه " 
+	
+	isEdit =False
+	isSuperGroup=True
+	StartActivity("insertAct")
+End Sub
+Sub ButtonMyChannel_Click
+
+	Try	
+		isEdit =True
+		Dim job As HttpJob
+		ProgressDialogShow("درحال دریافت")
+		job.Initialize("my_channel", Me)
+		query = "http://www.aloosalam.ir/index.php/mobile/index/search"
+		parameter="pass=1266&type=channel&sort=my" & "&user=" & userInfo.Get("user_id") & "&v=" & Application.VersionCode   & "&line=" & userInfo.Get("line_number") 
+		job.PostString(query,parameter )
+	Catch
+		Msgbox("خطا در دریافت اطلاعات ","خطا")
+	End Try	
+End Sub
+Sub PanelRobot_Click
+		 
+End Sub
+Sub PanelID_Click
+	
+End Sub
+Sub ButtonTopChannelView_Click
+	
+	isEdit =False
+	Try	
+		Dim job As HttpJob
+		ProgressDialogShow("درحال دریافت")
+		job.Initialize("topView_channel", Me)
+		query = "http://www.aloosalam.ir/index.php/mobile/index/search"
+		parameter="pass=1266&Type=channel&sort=topView"  & "&user=" & userInfo.Get("user_id") & "&v=" & Application.VersionCode & "&line=" & userInfo.Get("line_number") 
+		job.PostString(query,parameter)
+	Catch
+		Msgbox("خطا در دریافت اطلاعات ","خطا")
+	End Try	
+End Sub
+Sub ButtonTopChannelLike_Click
+	
+	isEdit =False
+	Try	
+		Dim job As HttpJob
+		ProgressDialogShow("درحال دریافت")
+		job.Initialize("topJoin_channel", Me)
+		query = "http://www.aloosalam.ir/index.php/mobile/index/search"
+		parameter="pass=1266&type=channel&sort=topJoin" & "&user=" & userInfo.Get("user_id") & "&v=" & Application.VersionCode & "&line=" & userInfo.Get("line_number") 
+		job.PostString(query, parameter)
+	Catch
+		Msgbox("خطا در دریافت اطلاعات ","خطا")
+	End Try	
+End Sub
+
+
